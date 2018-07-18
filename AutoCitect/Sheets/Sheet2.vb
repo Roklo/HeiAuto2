@@ -54,7 +54,7 @@ Public Class Sheet2
 
 
     Private Sub ProcessPage_FindSymbol()
-
+        'Hei på deg
         ' IOLIST_READ
 
         Dim lStat As Boolean
