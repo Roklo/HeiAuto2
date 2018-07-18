@@ -9,7 +9,6 @@ Public Class clsCITECTGenie
     Private m_LibraryName As String
     Private m_ObjectName As String
     Private m_ObjectType As Integer
-    Private m_ToolTip As String
 
 
     Private m_IASGenieType As String
@@ -24,12 +23,6 @@ Public Class clsCITECTGenie
         End Get
     End Property
 
-    Public ReadOnly Property Tooltip() As String
-        Get
-            Tooltip = m_ToolTip
-        End Get
-    End Property
-
     Public ReadOnly Property ObjectName() As String
         Get
             ObjectName = m_ObjectName
@@ -38,10 +31,10 @@ Public Class clsCITECTGenie
 
 
     Private Sub Clear()
-        ' m_AnimationNumber = -1
+        m_AnimationNumber = -1
 
-        '  m_IASGenieType = ""
-        ' m_SFI_NUMBER = ""
+        m_IASGenieType = ""
+        m_SFI_NUMBER = ""
 
         'Set m_CitectObjects = New Collection
         m_Properties = New Collection
@@ -181,7 +174,6 @@ ERROR_HANDLER:
         Dim lAnimationNumber As Integer
         Dim Lobject As clsCITECTObject
         Dim lProjectName As String
-        Dim lTooltip As String
 
         lProjectName = GraphicsBuilder.ProjectSelected
 
@@ -274,10 +266,9 @@ ERR_HANDLER:
 
 
     Private Sub Class_Terminate()
-        'Not in use?
+        'MsgBox "WTF!!"
     End Sub
 
-    'This method gets the first propperty of the selected object in the Graphics Builder
     Private Function LibraryObjectFirstProperty() As clsCITECTProperty
         Try
             Dim lName As String
@@ -290,9 +281,7 @@ ERR_HANDLER:
             lRetval = New clsCITECTProperty
             lRetval.Name = lName
             lRetval.Value = lval
-            If lval IsNot ("") Then
-                m_IsTagged = True
-            End If
+
             LibraryObjectFirstProperty = lRetval
 
             Exit Function
@@ -302,7 +291,7 @@ ERR_HANDLER:
 
     End Function
 
-    'This method gets the next property of an selected object in the Graphics Builder
+
     Private Function LibraryObjectNextProperty() As clsCITECTProperty
         Try
             Dim lName As String
@@ -314,19 +303,17 @@ ERR_HANDLER:
             lRetval = New clsCITECTProperty
             lRetval.Name = lName
             lRetval.Value = lval
-            If lval IsNot ("") Then
-                m_IsTagged = True
-            End If
+
             LibraryObjectNextProperty = lRetval
             Exit Function
         Catch ex As Exception
-            ' MessageBox.Show("Could not get next property or there ar no more properties")
             'Do nothing
         End Try
     End Function
 
 
-    'This method gets all the properties of an selected object in the Graphics Builder
+
+
     Private Sub GetGeineProperties()
 
         If PropertyCount > 0 Then
@@ -336,58 +323,13 @@ ERR_HANDLER:
         End If
 
         Dim Lprop As clsCITECTProperty = New clsCITECTProperty()
-        Try
+        Lprop = LibraryObjectFirstProperty()
+
+        While Not Lprop Is Nothing
             Clear()
-            Lprop = LibraryObjectFirstProperty()
-
             m_Properties.Add(Lprop)
-
-
-        Catch ex As Exception
-            MessageBox.Show("There was no first object")
-            m_IsTagged = False
-        End Try
-
-        'Checks if the object infact has a next property
-        Dim hasNextProperty As Boolean = True
-        Try
-            Dim lName
-            Dim Lval
-            GraphicsBuilder.LibraryObjectNextProperty(lName, Lval)
-            If (lName Or Lval) Is Nothing Then
-                hasNextProperty = False
-            End If
-        Catch ex As Exception
-            hasNextProperty = False
-        End Try
-
-
-        If hasNextProperty = True Then
-                While Not Lprop Is Nothing
-                    Clear()
-                    Lprop = LibraryObjectNextProperty()
-                    m_Properties.Add(Lprop)
-
-                End While
-            End If
-
-            Try
-            If Lprop.Name.ToString.Equals("TOOLTIP") Then
-                m_ToolTip = Lprop.Value
-            End If
-        Catch ex As Exception
-            Exit Try
-        End Try
-
-        'm_AnimationNumber
-        'm_IsTagged
-        'm_LibraryName
-        'm_ObjectName
-        'm_ObjectType
-
-
-
-
+            Lprop = LibraryObjectNextProperty()
+        End While
     End Sub
 
     Public Function MarkAsTagged(piTagged As Boolean)
